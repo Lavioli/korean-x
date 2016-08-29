@@ -11,6 +11,8 @@ module.exports = {
         "arrow-body-style": [
             "error",
             "always"
-        ]
+        ],
+        "no-underscore-dangle": 0,
+        "consistent-return": 0
     }
 };

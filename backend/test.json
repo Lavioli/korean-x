@@ -7,8 +7,13 @@ question = {
 
 user = {
   "_id": "328508235",
+  "name": "robby kim",
+  "auth": "token",
   "score": "70",
-  "238238509": 4,
-  "q2": 2,
-  "q3": 1
+}
+
+user-question = {
+  "user": "328508235",
+  "question": "238238509",
+  "mValue": 4
 }
