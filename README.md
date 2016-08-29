@@ -65,5 +65,5 @@ The third role is to store the users' progress in a MongoDB database. This shoul
 
 #### Wireframe
 
-[Splash Page](https://wireframe.cc/PAFKuo)
-[Main App](https://wireframe.cc/7jKL60)
+- [Splash Page](https://wireframe.cc/PAFKuo)
+- [Main App](https://wireframe.cc/7jKL60)
