@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/robbykim/french-x.git"
+    "url": "git+https://github.com/robbykim/korean-x.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/robbykim/french-x/issues"
+    "url": "https://github.com/robbykim/korean-x/issues"
   },
-  "homepage": "https://github.com/robbykim/french-x#readme",
+  "homepage": "https://github.com/robbykim/korean-x#readme",
   "devDependencies": {
     "eslint": "^3.4.0",
     "eslint-config-airbnb": "^10.0.1",
