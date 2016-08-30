@@ -20,8 +20,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 function loggedIn(req, res, next) {
-  console.log(req);
+  console.log(req.user);
   if (req.user) {
+    console.log('YAYYYYYYY');
     next();
   } else {
     res.redirect('/');
@@ -88,11 +89,13 @@ passport.use(new GoogleStrategy({
 
 // PASSPORT SERIALIZING to authenticate for sessions
 passport.serializeUser((user, done) => {
-  done(null, user);
+  done(null, user[0]._id);
 });
 
-passport.deserializeUser((user, done) => {
-  done(null, user);
+passport.deserializeUser((id, done) => {
+  User.findById(id, (err, user) => {
+    done(null, user);
+  });
 });
 
 // Authentication GET requests
