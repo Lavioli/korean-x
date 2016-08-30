@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const passport = require('passport');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const config = require('./config');
 const secret = require('./google-secret');
@@ -12,9 +14,18 @@ const app = express();
 const jsonParser = bodyParser.json();
 
 // PASSPORT MIDDLEWARE
+app.use(cookieParser());
+app.use(session({ secret: 'monkeys' }));
 app.use(passport.initialize());
 app.use(passport.session());
 
+function loggedIn(req, res, next) {
+  if (req.user) {
+    next();
+  } else {
+    res.redirect('/');
+  }
+}
 
 // RUN SERVER FUNCTION
 function runServer(callback) {
@@ -49,13 +60,26 @@ passport.use(new GoogleStrategy({
   (accessToken, refreshToken, profile, cb) => {
     User.find({ googleId: profile.id }, (err, user) => {
       if (!user.length) {
-        User.create({
-          googleId: profile.id,
-          name: profile.displayName,
-        }, (err, user) => {
-          return cb(err, user);
+        const questArr = [];
+        Question.find((err, questions) => {
+          questions.forEach((question) => {
+            questArr.push({
+              questionId: question._id,
+              mValue: 1,
+            });
+          });
+
+          User.create({
+            googleId: profile.id,
+            name: profile.displayName,
+            score: 0,
+            questions: questArr,
+          }, (err, user) => {
+            return cb(err, user);
+          });
         });
       }
+
       return cb(err, user);
     });
   }
@@ -94,16 +118,32 @@ app.get('/users', (req, res) => {
   });
 });
 
+// QUESTIONS endpoint
+// will pull the first question of the question array
+// based on the user that is logged in
 app.get('/questions', (req, res) => {
-  Question.find((err, questions) => {
+  // TEMP USER
+  const userId = '57c5ce92b875aac15ccdd822';
+
+  User.findById(userId, (err, user) => {
     if (err) {
       return res.status(400).json(err);
     }
-  // get the user object through ..
-  // get the questions through the ids in the array
-  // create some resp object which holds all these and
-  // return this as the response
-    return res.status(200).json(questions);
+
+    Question.findById(user.questions[0].questionId, (err, question) => {
+      if (err) {
+        return res.status(400).json(err);
+      }
+
+      const resQuestion = {
+        _id: question._id,
+        question: question.question,
+        mValue: user.questions[0].mValue,
+        score: user.score,
+      };
+
+      return res.status(200).json(resQuestion);
+    });
   });
 });
 
@@ -132,6 +172,21 @@ app.post('/questions', jsonParser, (req, res) => {
       .status(201)
       .json(question);
   });
+});
+
+/*
+QUESTIONS put request
+should be what happens when a user submits something
+will check for the correct answer and respond with the
+next question. Takes object in the following format:
+{
+  _id: '57c4a91d97cf256242b0ad13',
+  answer: 'rice' // whatever the user input is
+}
+*/
+app.put('/questions', jsonParser, (req, res) => {
+  // TEMP USER
+  const userId = '57c5ce92b875aac15ccdd822';
 });
 
 exports.app = app;
