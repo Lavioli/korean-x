@@ -1,29 +1,30 @@
 import React from 'react';
+import {Link} from 'react-router'
 
-class MainApp extends React.Component {
-    render () {
-        return (
-            <div>
-                <section>
-                    <h1>Korean X</h1>
-                    <form action="">
+function MainApp() {
+    return (
+        <div>
+            <section>
+                <h1>Korean X</h1>
+                <form action="">
+                    <Link to="/">
                         <button type="submit">Log Out</button>
-                    </form>
-                </section>
-                <section>
-                    <div>
-                        Some Words in Korean
-                    </div>
-                    <form action="">
-                        <input type="text"/>
-                    </form>
-                </section>
-                <section>
-                    <div>Your Score: 75</div>
-                </section>
-            </div>
-        );
-    }
+                    </Link>
+                </form>
+            </section>
+            <section>
+                <div>
+                    Some Words in Korean
+                </div>
+                <form action="">
+                    <input type="text"/>
+                </form>
+            </section>
+            <section>
+                <div>Your Score: 75</div>
+            </section>
+        </div>
+    );
 }
 
-module.exports = MainApp;
+export default MainApp;

@@ -5,10 +5,9 @@ import MainApp from '../components/main-app'
 
 const routes = (
     <Router>
-        <Route path="/" component={SplashPage}>
-            <Route path="main" component={MainApp} />
-        </Route>
+        <Route path="/" component={SplashPage} />
+        <Route path="main" component={MainApp} />
     </Router>
 );
 
-module.exports = routes;
+export default routes;
