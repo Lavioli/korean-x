@@ -13,6 +13,7 @@ module.exports = {
             "always"
         ],
         "no-underscore-dangle": 0,
-        "consistent-return": 0
+        "consistent-return": 0,
+        "no-shadow": 0
     }
 };

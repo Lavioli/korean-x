@@ -1,20 +1,19 @@
 const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
+  googleId: {
+    type: String,
+    required: true,
+  },
+
   name: {
     type: String,
     required: true,
   },
 
-  auth: {
-    type: Number,
-    required: true,
-  },
+  score: Number,
 
-  score: {
-    type: Number,
-    required: true,
-  },
+  questions: Array,
 });
 
 const User = mongoose.model('User', UserSchema);

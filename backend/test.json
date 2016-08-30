@@ -2,7 +2,6 @@ question = {
   "_id": "238238509",
   "question": "como estas?",
   "answer": "how are you?",
-  "mValue": 1
 }
 
 user = {
@@ -10,10 +9,23 @@ user = {
   "name": "robby kim",
   "auth": "token",
   "score": "70",
+  "questions": [
+    {
+      "question": "238238509",
+      "mValue": 4
+    },
+    {
+      "question": "238238509",
+      "mValue": 4
+    },
+    {
+      "question": "238238509",
+      "mValue": 4
+    }
+  ],
 }
 
-user-question = {
-  "user": "328508235",
+mValue = {
   "question": "238238509",
   "mValue": 4
 }

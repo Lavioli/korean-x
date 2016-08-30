@@ -10,11 +10,6 @@ const QuestionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-
-  mValue: {
-    type: Number,
-    ref: 'mValue',
-  },
 });
 
 const Question = mongoose.model('Question', QuestionSchema);
