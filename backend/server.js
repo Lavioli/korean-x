@@ -20,6 +20,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 function loggedIn(req, res, next) {
+  console.log(req);
   if (req.user) {
     next();
   } else {
@@ -121,7 +122,7 @@ app.get('/users', (req, res) => {
 // QUESTIONS endpoint
 // will pull the first question of the question array
 // based on the user that is logged in
-app.get('/questions', (req, res) => {
+app.get('/questions', loggedIn, (req, res) => {
   // TEMP USER
   const userId = '57c5ce92b875aac15ccdd822';
 
@@ -185,8 +186,61 @@ next question. Takes object in the following format:
 }
 */
 app.put('/questions', jsonParser, (req, res) => {
+  if (!req.body._id) {
+    return res.status(422).json({
+      message: 'Missing field: _id',
+    });
+  }
+
+  if (!req.body.answer) {
+    return res.status(422).json({
+      message: 'Missing field: answer',
+    });
+  }
   // TEMP USER
   const userId = '57c5ce92b875aac15ccdd822';
+
+  User.findById(userId, (err, user) => {
+    const userQuest = user.questions.slice();
+    let userScore = user.score;
+    let result = false;
+
+    Question.findById(req.body._id, (err, question) => {
+      if (err) {
+        return res.status(400).json(err);
+      }
+
+      if (question.answer === req.body.answer) {
+        userQuest[0].mValue *= 2;
+        userScore += 10;
+        result = true;
+      }
+
+      const currentQuest = userQuest.shift();
+      userQuest.push(currentQuest);
+
+      User.findByIdAndUpdate(userId, {
+        score: userScore,
+        questions: userQuest,
+      }, (err, newUser) => {
+        if (err) {
+          return res.status(400).json(err);
+        }
+
+        Question.findById(user.questions[0].questionId, (err, newQuestion) => {
+          const resQuestion = {
+            result,
+            _id: newQuestion._id,
+            question: newQuestion.question,
+            mValue: user.questions[0].mValue,
+            score: userScore,
+          };
+
+          return res.status(200).json(resQuestion);
+        });
+      });
+    });
+  });
 });
 
 exports.app = app;
