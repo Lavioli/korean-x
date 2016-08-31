@@ -1,12 +1,12 @@
-var actions = require('./actions');
+import actions from './actions';
 
-var reducer = function(state, action) {
+function reducer (state, action) {
     console.log(action.type, 'ACTION.type');
     state = state || {
             userAnswer: 'spam'
         };
 
-    if (action.type === 'SUBMIT_ANSWER') {
+    if (action.type === actions.submitAnswer) {
         console.log('WORKING');
         return Object.assign({}, state, {
             userAnswer: action.answer,
@@ -15,4 +15,4 @@ var reducer = function(state, action) {
     return state;
 };
 
-module.exports = reducer;
+export default reducer;
