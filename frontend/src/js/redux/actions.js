@@ -1,13 +1,5 @@
 import fetch from 'isomorphic-fetch';
 
-const SUBMIT_ANSWER = 'SUBMIT_ANSWER';
-function submitAnswer(answer) {
-    return {
-        type: SUBMIT_ANSWER,
-        answer: answer
-    }
-}
-
 const FETCH_QUESTIONS_SUCCESS = 'FETCH_QUESTIONS_SUCCESS';
 function fetchQuestionsSuccess(questions) {
     return {
@@ -26,9 +18,9 @@ function fetchQuestionsError(error) {
 
 function fetchQuestion() {
     return (dispatch) => {
-        let url = 'http://localhost:9000';
+        let url = 'http://localhost:8080/questions';
         return fetch(url).then((response) => {
-            if (response.state < 200 || response.status >= 300) {
+            if (response.status < 200 || response.status >= 300) {
                 let error = new Error(response.statusText);
                 error.response = response;
                 throw error;
@@ -42,10 +34,56 @@ function fetchQuestion() {
     };
 }
 
-exports.SUBMIT_ANSWER = SUBMIT_ANSWER;
-exports.submitAnswer = submitAnswer;
+const SUBMIT_ANSWER_SUCCESS = 'SUBMIT_ANSWER_SUCCESS';
+function submitAnswerSuccess(answer) {
+    return {
+        type: SUBMIT_ANSWER_SUCCESS,
+        answer: answer
+    }
+}
+
+const SUBMIT_ANSWER_ERROR = 'SUBMIT_ANSWER_ERROR';
+function submitAnswerError(error) {
+    return {
+        type: SUBMIT_ANSWER_ERROR,
+        answer: error
+    }
+}
+
+function submitAnswer(answer) {
+    return (dispatch) => {
+        let init = {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(answer)
+        };
+        let url = 'http://localhost:8080/questions';
+        return fetch(url, init).then((response) => {
+            if (response.status < 200 || response.status >= 300) {
+                let error = new Error(response.statusText);
+                error.response = response;
+                throw error;
+            }
+            return response.json();
+        }).then((answer) => {
+            return dispatch(submitAnswerSuccess(answer));
+        }).catch((error) => {
+            return dispatch(submitAnswerError(error));
+        })
+    };
+}
+
 exports.FETCH_QUESTIONS_SUCCESS = FETCH_QUESTIONS_SUCCESS;
 exports.fetchQuestionsSuccess = fetchQuestionsSuccess;
 exports.FETCH_QUESTIONS_ERROR = FETCH_QUESTIONS_ERROR;
 exports.fetchQuestionsError = fetchQuestionsError;
 exports.fetchQuestion = fetchQuestion;
+
+exports.SUBMIT_ANSWER_SUCCESS = SUBMIT_ANSWER_SUCCESS;
+exports.submitAnswerSuccess = submitAnswerSuccess;
+exports.SUBMIT_ANSWER_ERROR = SUBMIT_ANSWER_ERROR;
+exports.submitAnswerError = submitAnswerError;
+exports.submitAnswer = submitAnswer;

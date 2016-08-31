@@ -8,39 +8,45 @@ class MainApp extends React.Component {
         super(props);
         this.submitAnswer = this.submitAnswer.bind(this);
     }
+
+    componentDidMount() {
+        this.props.dispatch(actions.fetchQuestion());
+    }
+
     submitAnswer(event) {
         event.preventDefault();
-        this.props.dispatch( actions.submitAnswer( this.refs.userAnswer.value ) );
+        this.props.dispatch(actions.submitAnswer({
+            _id: this.props.questions._id,
+            answer: this.refs.userAnswer.value
+        }));
     }
-    render () {
+
+    render() {
+        console.log(this.props.questions, '<---- QUESTIONS');
         return (
             <div>
                 <section>
                     <h1>Korean X</h1>
-                    <form action="">
-                        <Link to="/">
-                            <button type="submit">Log Out</button>
-                        </Link>
-                    </form>
+                    <a href="/logout">Log Out</a>
                 </section>
                 <section>
-                    <div>{this.props.answers}</div>
+                    <div>{this.props.questions.question}</div>
                     <form onSubmit={this.submitAnswer}>
-                        <input type="text" ref="userAnswer" />
-                        <input type="submit" value="ENTER!!" />
+                        <input type="text" ref="userAnswer"/>
                     </form>
                 </section>
                 <section>
-                    <div>Your Score: 100</div>
+                    <div>Your Score: {this.props.questions.score}</div>
                 </section>
             </div>
         )
     }
 }
 
-const mapStateToProps = function(state, props) {
+const mapStateToProps = function (state, props) {
     return {
-        answers: state.userAnswer
+        answers: state.userAnswer,
+        questions: state.questions,
     };
 };
 

@@ -9,11 +9,9 @@ function SplashPage() {
                 <div>Learn language through spaced repetition</div>
             </section>
             <section>
-                <form action="">
-                    <a href="http://localhost:8080/auth/google">
-                        Register/Login
-                    </a>
-                </form>
+                <a href="/auth/google">
+                    Register/Login
+                </a>
             </section>
         </div>
     );
