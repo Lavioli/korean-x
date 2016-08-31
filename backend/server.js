@@ -1,31 +1,22 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const session = require('express-session');
-const cookieParser = require('cookie-parser');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const config = require('./config');
-const secret = require('./google-secret');
 const Question = require('./models/question');
 const User = require('./models/user');
-
+const auth = require('./routes/auth');
+const questions = require('./routes/questions');
 const app = express();
 const jsonParser = bodyParser.json();
 
-// PASSPORT MIDDLEWARE
 app.use(cookieParser());
 app.use(session({ secret: 'monkeys' }));
 app.use(passport.initialize());
 app.use(passport.session());
-
-function loggedIn(req, res, next) {
-  if (req.user) {
-    next();
-  } else {
-    res.redirect('/');
-  }
-}
+app.use(express.static('../frontend/build'));
 
 // RUN SERVER FUNCTION
 function runServer(callback) {
@@ -51,65 +42,10 @@ if (require.main === module) {
   });
 }
 
-// GOOGLE AUTHENTICATION STRATEGY
-passport.use(new GoogleStrategy({
-  clientID: secret.GOOGLE_CLIENT_ID,
-  clientSecret: secret.GOOGLE_CLIENT_SECRET,
-  callbackURL: 'http://localhost:8080/auth/google/callback',
-},
-  (accessToken, refreshToken, profile, cb) => {
-    User.find({ googleId: profile.id }, (err, user) => {
-      if (!user.length) {
-        const questArr = [];
-        Question.find((err, questions) => {
-          questions.forEach((question) => {
-            questArr.push({
-              questionId: question._id,
-              mValue: 1,
-            });
-          });
+app.use('/auth', auth);
+app.use('/questions', questions);
 
-          User.create({
-            googleId: profile.id,
-            name: profile.displayName,
-            score: 0,
-            questions: questArr,
-          }, (err, user) => {
-            return cb(err, user);
-          });
-        });
-      }
-
-      return cb(err, user);
-    });
-  }
-));
-
-// PASSPORT SERIALIZING to authenticate for sessions
-passport.serializeUser((user, done) => {
-  done(null, user[0]._id);
-});
-
-passport.deserializeUser((id, done) => {
-  User.findById(id, (err, user) => {
-    done(null, user);
-  });
-});
-
-// Authentication GET requests
-app.get('/auth/google',
-  passport.authenticate('google', { scope: ['profile'] })
-);
-
-app.get('/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login' }),
-  (req, res) => {
-    // Successful authentication, redirect home.
-    res.redirect('/main');
-  }
-);
-
-app.get('/logout', function(req, res){
+app.get('/logout', (req, res) => {
   req.logout();
   res.redirect('/');
 });
@@ -125,7 +61,7 @@ app.get('/users', (req, res) => {
   });
 });
 
-app.del('/users/:userId', (req, res) => {
+app.delete('/users/:userId', (req, res) => {
   const userId = req.params.userId;
   User.findByIdAndRemove(userId, (err, user) => {
     if (err) {
@@ -136,142 +72,6 @@ app.del('/users/:userId', (req, res) => {
   });
 });
 
-// QUESTIONS endpoint
-// will pull the first question of the question array
-// based on the user that is logged in
-app.get('/questions', loggedIn, (req, res) => {
-  // TEMP USER
-  const userId = req.user._id;
-
-  User.findById(userId, (err, user) => {
-    if (err) {
-      return res.status(400).json(err);
-    }
-
-    Question.findById(user.questions[0].questionId, (err, question) => {
-      if (err) {
-        return res.status(400).json(err);
-      }
-
-      const resQuestion = {
-        _id: question._id,
-        question: question.question,
-        mValue: user.questions[0].mValue,
-        score: user.score,
-      };
-
-      return res.status(200).json(resQuestion);
-    });
-  });
-});
-
-app.post('/questions', jsonParser, (req, res) => {
-  if (!req.body.question) {
-    return res.status(422).json({
-      message: 'Missing field: Question',
-    });
-  }
-
-  if (!req.body.answer) {
-    return res.status(422).json({
-      answer: 'Missing field: Answer',
-    });
-  }
-
-  Question.create({
-    question: req.body.question,
-    answer: req.body.answer,
-  }, (err, question) => {
-    if (err) {
-      return res.status(400).json(err);
-    }
-
-    return res.header('location', `/questions/${question._id}`)
-      .status(201)
-      .json(question);
-  });
-});
-
-/*
-QUESTIONS put request
-should be what happens when a user submits something
-will check for the correct answer and respond with the
-next question. Takes object in the following format:
-{
-  _id: '57c4a91d97cf256242b0ad13',
-  answer: 'rice' // whatever the user input is
-}
-*/
-app.put('/questions', jsonParser, (req, res) => {
-  if (!req.body._id) {
-    return res.status(422).json({
-      message: 'Missing field: _id',
-    });
-  }
-
-  if (!req.body.answer) {
-    return res.status(422).json({
-      message: 'Missing field: answer',
-    });
-  }
-  // TEMP USER
-  const userId = req.user._id;
-
-  User.findById(userId, (err, user) => {
-    const userQuest = user.questions.slice();
-    let userScore = user.score;
-    let result = false;
-
-    Question.findById(req.body._id, (err, question) => {
-      if (err) {
-        return res.status(400).json(err);
-      }
-
-      if (question.answer === req.body.answer) {
-        userQuest[0].mValue *= 2;
-        userScore += 10;
-        result = true;
-      }
-
-      const currentQuest = userQuest.shift();
-      userQuest.push(currentQuest);
-
-      User.findByIdAndUpdate(userId, {
-        score: userScore,
-        questions: userQuest,
-      }, (err) => {
-        if (err) {
-          return res.status(400).json(err);
-        }
-
-        Question.findById(user.questions[0].questionId, (err, newQuestion) => {
-          const resQuestion = {
-            result,
-            _id: newQuestion._id,
-            question: newQuestion.question,
-            mValue: user.questions[0].mValue,
-            score: userScore,
-          };
-
-          return res.status(200).json(resQuestion);
-        });
-      });
-    });
-  });
-});
-
-// TEST endpoint to see the questions array
-app.get('/questions/list', loggedIn, (req, res) => {
-  console.log(req.user);
-  User.findById(req.user._id, (err, user) => {
-    console.log(user);
-    if (err) {
-      return res.status(400).json(err);
-    }
-
-    return res.status(200).json(user.questions);
-  });
-});
 
 exports.app = app;
 exports.runServer = runServer;
