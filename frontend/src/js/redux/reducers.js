@@ -3,7 +3,7 @@ import actions from './actions';
 function reducer (state, action) {
     state = state || {
             userAnswer: null, // --> action.answer
-            questions: null // --> action.questions
+            questions: {} // --> action.questions
         };
 
     if (action.type === actions.FETCH_QUESTIONS_SUCCESS) {
@@ -13,9 +13,9 @@ function reducer (state, action) {
         });
     } else if (action.type === actions.FETCH_QUESTIONS_ERROR) {
         return state;
-    } else if (action.type === actions.SUBMIT_ANSWER) {
+    } else if (action.type === actions.SUBMIT_ANSWER_SUCCESS) {
         return Object.assign({}, state, {
-            userAnswer: action.answer
+            questions: action.answer
         });
     }
     return state;

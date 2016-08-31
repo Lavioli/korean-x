@@ -10,15 +10,19 @@ class MainApp extends React.Component {
     }
 
     componentDidMount() {
-        this.props.dispatch( actions.fetchQuestion() );
+        this.props.dispatch(actions.fetchQuestion());
     }
 
     submitAnswer(event) {
         event.preventDefault();
-        this.props.dispatch( actions.submitAnswer( this.refs.userAnswer.value ) );
+        this.props.dispatch(actions.submitAnswer({
+            _id: this.props.questions._id,
+            answer: this.refs.userAnswer.value
+        }));
     }
-    render () {
-        console.log(this.props.questions, '<---this.props.questions');
+
+    render() {
+        console.log(this.props.questions, '<---- QUESTIONS');
         return (
             <div>
                 <section>
@@ -26,23 +30,23 @@ class MainApp extends React.Component {
                     <a href="/logout">Log Out</a>
                 </section>
                 <section>
-                    <div>{this.props.questions}</div>
+                    <div>{this.props.questions.question}</div>
                     <form onSubmit={this.submitAnswer}>
-                        <input type="text" ref="userAnswer" />
+                        <input type="text" ref="userAnswer"/>
                     </form>
                 </section>
                 <section>
-                    <div>Your Score: 100</div>
+                    <div>Your Score: {this.props.questions.score}</div>
                 </section>
             </div>
         )
     }
 }
 
-const mapStateToProps = function(state, props) {
+const mapStateToProps = function (state, props) {
     return {
         answers: state.userAnswer,
-        questions: state.questions
+        questions: state.questions,
     };
 };
 
