@@ -25,14 +25,14 @@ function fetchQuestion() {
                 error.response = response;
                 throw error;
             }
-            console.log(response, '<---just response');
-            console.log(response.json(), '<----with json');
+            // console.log(response, '<---just response');
+            // console.log(response.json(), '<----with json');
             return response.json();
         }).then((questions) => {
-            console.log(questions, '<---fetch Qs');
+            // console.log(questions, '<---fetch Qs');
             return dispatch(fetchQuestionsSuccess(questions));
         }).catch((error) => {
-            console.log(error, '<---fetch Es');
+            // console.log(error, '<---fetch Es');
             return dispatch(fetchQuestionsError(error));
         })
     };
