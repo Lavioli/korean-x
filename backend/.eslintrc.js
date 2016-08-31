@@ -15,6 +15,7 @@ module.exports = {
         "no-underscore-dangle": 0,
         "consistent-return": 0,
         "no-shadow": 0,
-        "array-callback-return": 0
+        "array-callback-return": 0,
+        "no-console": 0
     }
 }

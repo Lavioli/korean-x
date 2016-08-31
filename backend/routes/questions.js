@@ -17,11 +17,12 @@ function loggedIn(req, res, next) {
 // QUESTIONS endpoint
 // will pull the first question of the question array
 // based on the user that is logged in
-router.get('/', /*loggedIn,*/ (req, res) => {
+router.get('/', loggedIn, (req, res) => {
   // TEMP USER
-  // const userId = req.user._id;
+  const userId = req.user._id;
+  console.log(userId);
   // const userId = '57c70400ed63bc78ed60634a'; // SEAN
-  const userId = '57c72c84be2b70561d96673b'; // ROBBY
+  // const userId = '57c7365779e5566c21c3176a'; // ROBBY
 
   User.findById(userId, (err, user) => {
     if (err) {
@@ -95,9 +96,9 @@ router.put('/', jsonParser, (req, res) => {
     });
   }
   // TEMP USER
-  // const userId = req.user._id;
+  const userId = req.user._id;
   // const userId = '57c70400ed63bc78ed60634a'; // SEAN
-  const userId = '57c72c84be2b70561d96673b'; // ROBBY
+  // const userId = '57c7365779e5566c21c3176a'; // ROBBY
 
   User.findById(userId, (err, user) => {
     const userQuest = user.questions.slice();
