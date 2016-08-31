@@ -1,22 +1,14 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const session = require('express-session');
 const config = require('./config');
-const Question = require('./models/question');
-const User = require('./models/user');
 const auth = require('./routes/auth');
 const questions = require('./routes/questions');
-const app = express();
-const jsonParser = bodyParser.json();
+const users = require('./routes/users');
 
-app.use(cookieParser());
-app.use(session({ secret: 'monkeys' }));
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(express.static('../frontend/build'));
+const app = express();
 
 // RUN SERVER FUNCTION
 function runServer(callback) {
@@ -42,36 +34,20 @@ if (require.main === module) {
   });
 }
 
+app.use(cookieParser());
+app.use(session({ secret: 'monkeys' }));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(express.static('../frontend/build'));
+
 app.use('/auth', auth);
 app.use('/questions', questions);
+app.use('/users', users);
 
 app.get('/logout', (req, res) => {
   req.logout();
   res.redirect('/');
 });
-
-// users GET requests
-app.get('/users', (req, res) => {
-  User.find((err, users) => {
-    if (err) {
-      return res.status(400).json(err);
-    }
-
-    return res.status(200).json(users);
-  });
-});
-
-app.delete('/users/:userId', (req, res) => {
-  const userId = req.params.userId;
-  User.findByIdAndRemove(userId, (err, user) => {
-    if (err) {
-      return res.status(400).json(err);
-    }
-
-    return res.status(200).json(user);
-  });
-});
-
 
 exports.app = app;
 exports.runServer = runServer;
