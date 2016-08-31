@@ -20,9 +20,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 function loggedIn(req, res, next) {
-  console.log(req.user);
   if (req.user) {
-    console.log('YAYYYYYYY');
     next();
   } else {
     res.redirect('/');
@@ -225,7 +223,7 @@ app.put('/questions', jsonParser, (req, res) => {
       User.findByIdAndUpdate(userId, {
         score: userScore,
         questions: userQuest,
-      }, (err, newUser) => {
+      }, (err) => {
         if (err) {
           return res.status(400).json(err);
         }
@@ -243,6 +241,19 @@ app.put('/questions', jsonParser, (req, res) => {
         });
       });
     });
+  });
+});
+
+// TEST endpoint to see the questions array
+app.get('/questions/list', loggedIn, (req, res) => {
+  console.log(req.user);
+  User.findById(req.user._id, (err, user) => {
+    console.log(user);
+    if (err) {
+      return res.status(400).json(err);
+    }
+
+    return res.status(200).json(user.questions);
   });
 });
 
