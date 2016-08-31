@@ -10,9 +10,9 @@ function SplashPage() {
             </section>
             <section>
                 <form action="">
-                    <Link to="/main">
-                        <button type="submit">Register/Login</button>
-                    </Link>
+                    <a href="http://localhost:8080/auth/google">
+                        Register/Login
+                    </a>
                 </form>
             </section>
         </div>
