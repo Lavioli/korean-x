@@ -125,7 +125,7 @@ app.get('/users', (req, res) => {
 // based on the user that is logged in
 app.get('/questions', loggedIn, (req, res) => {
   // TEMP USER
-  const userId = '57c5ce92b875aac15ccdd822';
+  const userId = req.user._id;
 
   User.findById(userId, (err, user) => {
     if (err) {
@@ -199,7 +199,7 @@ app.put('/questions', jsonParser, (req, res) => {
     });
   }
   // TEMP USER
-  const userId = '57c5ce92b875aac15ccdd822';
+  const userId = req.user._id;
 
   User.findById(userId, (err, user) => {
     const userQuest = user.questions.slice();
