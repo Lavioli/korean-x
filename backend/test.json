@@ -1,0 +1,31 @@
+question = {
+  "_id": "238238509",
+  "question": "como estas?",
+  "answer": "how are you?",
+}
+
+user = {
+  "_id": "328508235",
+  "name": "robby kim",
+  "auth": "token",
+  "score": "70",
+  "questions": [
+    {
+      "question": "238238509",
+      "mValue": 4
+    },
+    {
+      "question": "238238509",
+      "mValue": 4
+    },
+    {
+      "question": "238238509",
+      "mValue": 4
+    }
+  ],
+}
+
+mValue = {
+  "question": "238238509",
+  "mValue": 4
+}
