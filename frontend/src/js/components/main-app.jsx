@@ -8,11 +8,17 @@ class MainApp extends React.Component {
         super(props);
         this.submitAnswer = this.submitAnswer.bind(this);
     }
+
+    componentDidMount() {
+        this.props.dispatch( actions.fetchQuestion() );
+    }
+
     submitAnswer(event) {
         event.preventDefault();
         this.props.dispatch( actions.submitAnswer( this.refs.userAnswer.value ) );
     }
     render () {
+        console.log(this.props.questions, '<---this.props.questions');
         return (
             <div>
                 <section>
@@ -20,7 +26,7 @@ class MainApp extends React.Component {
                     <a href="/logout">Log Out</a>
                 </section>
                 <section>
-                    <div>{this.props.answers}</div>
+                    <div>{this.props.questions}</div>
                     <form onSubmit={this.submitAnswer}>
                         <input type="text" ref="userAnswer" />
                     </form>
@@ -35,7 +41,8 @@ class MainApp extends React.Component {
 
 const mapStateToProps = function(state, props) {
     return {
-        answers: state.userAnswer
+        answers: state.userAnswer,
+        questions: state.questions
     };
 };
 

@@ -25,17 +25,20 @@ function fetchQuestionsError(error) {
 }
 
 function fetchQuestion() {
+    console.log('WORKING!!!!!!');
     return (dispatch) => {
         let url = 'http://localhost:8080/questions';
         return fetch(url).then((response) => {
-            if (response.state < 200 || response.status >= 300) {
+            if (response.status < 200 || response.status >= 300) {
                 let error = new Error(response.statusText);
                 error.response = response;
                 throw error;
             }
+            console.log(response.json(), '<-----response');
+
             return response.json();
         }).then((questions) => {
-            console.log(questions, '<---QS');
+            console.log(questions, '<---Question!!!');
             return dispatch(fetchQuestionsSuccess(questions));
         }).catch((error) => {
             return dispatch(fetchQuestionsError(error));
