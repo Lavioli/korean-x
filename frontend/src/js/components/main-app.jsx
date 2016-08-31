@@ -17,17 +17,12 @@ class MainApp extends React.Component {
             <div>
                 <section>
                     <h1>Korean X</h1>
-                    <form action="">
-                        <Link to="/">
-                            <button type="submit">Log Out</button>
-                        </Link>
-                    </form>
+                    <a href="/logout">Log Out</a>
                 </section>
                 <section>
                     <div>{this.props.answers}</div>
                     <form onSubmit={this.submitAnswer}>
                         <input type="text" ref="userAnswer" />
-                        <input type="submit" value="ENTER!!" />
                     </form>
                 </section>
                 <section>
