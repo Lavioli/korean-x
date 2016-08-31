@@ -26,7 +26,7 @@ function fetchQuestionsError(error) {
 
 function fetchQuestion() {
     return (dispatch) => {
-        let url = 'http://localhost:9000';
+        let url = 'http://localhost:8080/questions';
         return fetch(url).then((response) => {
             if (response.state < 200 || response.status >= 300) {
                 let error = new Error(response.statusText);
@@ -35,6 +35,7 @@ function fetchQuestion() {
             }
             return response.json();
         }).then((questions) => {
+            console.log(questions, '<---QS');
             return dispatch(fetchQuestionsSuccess(questions));
         }).catch((error) => {
             return dispatch(fetchQuestionsError(error));
