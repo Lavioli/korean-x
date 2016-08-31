@@ -4,14 +4,15 @@ import {connect} from 'react-redux';
 import actions from '../redux/actions';
 
 class MainApp extends React.Component {
-    submitAnswer (event) {
-        event.preventDefault();
-        const userAnswer = this.refs.userAnswer.value;
-        this.props.dispatch( actions.submitAnswer( userAnswer ) );
+    constructor(props) {
+        super(props);
+        this.submitAnswer = this.submitAnswer.bind(this);
     }
-
+    submitAnswer(event) {
+        event.preventDefault();
+        this.props.dispatch( actions.submitAnswer( this.refs.userAnswer.value ) );
+    }
     render () {
-        console.log(this.props.answers, '<----PROPS  ANSWER');
         return (
             <div>
                 <section>
@@ -23,15 +24,14 @@ class MainApp extends React.Component {
                     </form>
                 </section>
                 <section>
-                    <div>
-
-                    </div>
+                    <div>{this.props.answers}</div>
                     <form onSubmit={this.submitAnswer}>
                         <input type="text" ref="userAnswer" />
+                        <input type="submit" value="ENTER!!" />
                     </form>
                 </section>
                 <section>
-                    <div>Your Score: 75</div>
+                    <div>Your Score: 100</div>
                 </section>
             </div>
         )
@@ -39,7 +39,6 @@ class MainApp extends React.Component {
 }
 
 const mapStateToProps = function(state, props) {
-    console.log(state, '<---STATE');
     return {
         answers: state.userAnswer
     };

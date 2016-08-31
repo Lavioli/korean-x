@@ -1,18 +1,16 @@
 import actions from './actions';
 
 function reducer (state, action) {
-    console.log(action.type, 'ACTION.type');
     state = state || {
-            userAnswer: 'spam'
+            userAnswer: null
         };
 
-    if (action.type === actions.submitAnswer) {
-        console.log('WORKING');
+    if (action.type === actions.SUBMIT_ANSWER) {
         return Object.assign({}, state, {
-            userAnswer: action.answer,
+            userAnswer: action.answer
         });
     }
     return state;
-};
+}
 
 export default reducer;
