@@ -109,6 +109,11 @@ app.get('/auth/google/callback',
   }
 );
 
+app.get('/logout', function(req, res){
+  req.logout();
+  res.redirect('/');
+});
+
 // users GET requests
 app.get('/users', (req, res) => {
   User.find((err, users) => {
@@ -117,6 +122,17 @@ app.get('/users', (req, res) => {
     }
 
     return res.status(200).json(users);
+  });
+});
+
+app.del('/users/:userId', (req, res) => {
+  const userId = req.params.userId;
+  User.findByIdAndRemove(userId, (err, user) => {
+    if (err) {
+      return res.status(400).json(err);
+    }
+
+    return res.status(200).json(user);
   });
 });
 
