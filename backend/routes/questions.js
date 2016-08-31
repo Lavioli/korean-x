@@ -17,10 +17,12 @@ function loggedIn(req, res, next) {
 // QUESTIONS endpoint
 // will pull the first question of the question array
 // based on the user that is logged in
-router.get('/', /*loggedIn,*/ (req, res) => {
+router.get('/', loggedIn, (req, res) => {
   // TEMP USER
-  // const userId = req.user._id;
-  const userId = '57c70400ed63bc78ed60634a';
+  const userId = req.user._id;
+  console.log(userId);
+  // const userId = '57c70400ed63bc78ed60634a'; // SEAN
+  // const userId = '57c7365779e5566c21c3176a'; // ROBBY
 
   User.findById(userId, (err, user) => {
     if (err) {
@@ -94,8 +96,9 @@ router.put('/', jsonParser, (req, res) => {
     });
   }
   // TEMP USER
-  // const userId = req.user._id;
-  const userId = '57c70400ed63bc78ed60634a';
+  const userId = req.user._id;
+  // const userId = '57c70400ed63bc78ed60634a'; // SEAN
+  // const userId = '57c7365779e5566c21c3176a'; // ROBBY
 
   User.findById(userId, (err, user) => {
     const userQuest = user.questions.slice();
@@ -119,18 +122,17 @@ router.put('/', jsonParser, (req, res) => {
       User.findByIdAndUpdate(userId, {
         score: userScore,
         questions: userQuest,
-      }, (err) => {
+      }, { new: true }, (err, newUser) => {
         if (err) {
           return res.status(400).json(err);
         }
 
-        Question.findById(user.questions[0].questionId, (err, newQuestion) => {
+        Question.findById(newUser.questions[0].questionId, (err, newQuestion) => {
           const resQuestion = {
             result,
             _id: newQuestion._id,
             question: newQuestion.question,
-            mValue: user.questions[0].mValue,
-            score: userScore,
+            score: newUser.score,
           };
 
           return res.status(200).json(resQuestion);
@@ -142,9 +144,7 @@ router.put('/', jsonParser, (req, res) => {
 
 // TEST endpoint to see the questions array
 router.get('/list', loggedIn, (req, res) => {
-  console.log(req.user);
   User.findById(req.user._id, (err, user) => {
-    console.log(user);
     if (err) {
       return res.status(400).json(err);
     }
