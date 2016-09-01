@@ -71,11 +71,16 @@ router.post('/', jsonParser, (req, res) => {
           answer: question.answer,
         });
 
-        User.findByIdAndUpdate(user._id, { questions: questArr }, { new: true }, err => {
-          if (err) {
-            return res.status(400).json(err);
+        User.findByIdAndUpdate(
+          user._id,
+          { questions: questArr },
+          { new: true },
+          err => {
+            if (err) {
+              return res.status(400).json(err);
+            }
           }
-        });
+        );
       });
     });
 
