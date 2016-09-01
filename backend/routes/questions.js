@@ -20,7 +20,7 @@ function makeResponse(_id, question, score, result) {
 // based on the user that is logged in
 router.get('/', (req, res) => {
   // const userId = '57c70400ed63bc78ed60634a'; // SEAN
-  const userId = '57c84960103a807a303f3ea3'; // ROBBY
+  const userId = '57c86f3cdfef1aef37258cae'; // ROBBY
 
   User.findById(userId, (err, user) => {
     if (err) {
@@ -61,6 +61,24 @@ router.post('/', jsonParser, (req, res) => {
       return res.status(400).json(err);
     }
 
+    User.find((err, users) => {
+      users.forEach((user) => {
+        const questArr = user.questions.slice();
+        questArr.push({
+          mValue: 1,
+          questionId: question._id,
+          question: question.question,
+          answer: question.answer,
+        });
+
+        User.findByIdAndUpdate(user._id, { questions: questArr }, { new: true }, err => {
+          if (err) {
+            return res.status(400).json(err);
+          }
+        });
+      });
+    });
+
     return res.header('location', `/questions/${question._id}`)
       .status(201)
       .json(question);
@@ -92,7 +110,7 @@ router.put('/', jsonParser, (req, res) => {
   // TEMP USER
   // const userId = req.user._id;
   // const userId = '57c70400ed63bc78ed60634a'; // SEAN
-  const userId = '57c84960103a807a303f3ea3'; // ROBBY
+  const userId = '57c86f3cdfef1aef37258cae'; // ROBBY
 
   User.findById(userId, (err, user) => {
     const userQuest = user.questions.slice();
@@ -108,6 +126,11 @@ router.put('/', jsonParser, (req, res) => {
       result = true;
     } else {
       currentQ.mValue = 1;
+      if (userScore >= 15) {
+        userScore -= 15;
+      } else {
+        userScore = 0;
+      }
     }
 
     userQuest.shift();
