@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const Question = require('../models/question');
 const User = require('../models/user');
+const passport = require('passport');
 
 const router = express.Router();
 const jsonParser = bodyParser.json();
@@ -18,9 +19,11 @@ function makeResponse(_id, question, score, result) {
 // QUESTIONS endpoint
 // will pull the first question of the question array
 // based on the user that is logged in
-router.get('/', (req, res) => {
+router.get('/', passport.authenticate('bearer', { session: false }), (req, res) => {
   // const userId = '57c880b9e382072d1a2694b2'; // SEAN
-  const userId = '57c86f3cdfef1aef37258cae'; // ROBBY
+  // const userId = '57c86f3cdfef1aef37258cae'; // ROBBY
+  console.log('hello');
+  console.log(req.user);
 
   User.findById(userId, (err, user) => {
     if (err) {

@@ -1,7 +1,10 @@
+const fs = require('fs');
+
 const express = require('express');
 const passport = require('passport');
-const mongoose = require('mongoose');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const BearerStrategy = require('passport-http-bearer').Strategy;
+
 const secret = require('../google-secret');
 const Question = require('../models/question');
 const User = require('../models/user');
@@ -29,6 +32,7 @@ passport.use(new GoogleStrategy({
           });
 
           User.create({
+            accessToken,
             googleId: profile.id,
             name: profile.displayName,
             score: 0,
@@ -45,24 +49,21 @@ passport.use(new GoogleStrategy({
   }
 ));
 
-// PASSPORT SERIALIZING to authenticate for sessions
-passport.serializeUser((user, done) => {
-  console.log('serial');
-  if (!user.length) {
-    console.log('if');
-    done(null);
-  } else {
-    console.log('else');
-    done(null, user[0]._id);
-  }
-});
+passport.use(new BearerStrategy(
+  (token, done) => {
+    User.find({ accessToken: token }, (err, user) => {
+      if (err) {
+        return done(null, false);
+      }
 
-passport.deserializeUser((id, done) => {
-  console.log('deserial');
-  User.findById(id, (err, user) => {
-    done(null, user);
-  });
-});
+      if (!user.length) {
+        return done(null, false);
+      }
+
+      return done(null, user[0].accessToken);
+    });
+  }
+));
 
 // Authentication GET requests
 router.get('/google',
@@ -70,10 +71,16 @@ router.get('/google',
 );
 
 router.get('/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login' }),
+  passport.authenticate('google', { failureRedirect: '/login', session: false }),
   (req, res) => {
     // Successful authentication, redirect home.
-    res.redirect('/#/main');
+    fs.readFile('../frontend/build/index.html', (err, html) => {
+      html = html.toString();
+      html = html.replace('<!--script-->',
+        `<script>const AUTH_TOKEN="${req.user[0].accessToken}";
+        history.replaceState(null, null, "/index.html");</script>`);
+      res.send(html);
+    });
   }
 );
 
