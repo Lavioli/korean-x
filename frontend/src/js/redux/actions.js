@@ -29,7 +29,7 @@ function fetchQuestion() {
             // console.log(response.json(), '<----with json');
             return response.json();
         }).then((questions) => {
-            // console.log(questions, '<---fetch Qs');
+            console.log(questions, '<---fetch Qs');
             return dispatch(fetchQuestionsSuccess(questions));
         }).catch((error) => {
             // console.log(error, '<---fetch Es');
