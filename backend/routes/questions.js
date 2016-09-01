@@ -6,22 +6,19 @@ const User = require('../models/user');
 const router = express.Router();
 const jsonParser = bodyParser.json();
 
-function loggedIn(req, res, next) {
-  if (req.user) {
-    next();
-  } else {
-    console.log('ELSE');
-    res.redirect('/');
-  }
+function makeResponse(_id, question, score, result) {
+  return {
+    _id,
+    question,
+    score,
+    result,
+  };
 }
 
 // QUESTIONS endpoint
 // will pull the first question of the question array
 // based on the user that is logged in
 router.get('/', (req, res) => {
-  // TEMP USER
-  // const userId = req.user._id;
-  // console.log(userId);
   // const userId = '57c70400ed63bc78ed60634a'; // SEAN
   const userId = '57c84960103a807a303f3ea3'; // ROBBY
 
@@ -32,12 +29,12 @@ router.get('/', (req, res) => {
 
     const currentQ = user.questions[0];
 
-    const resQuestion = {
-      _id: currentQ.questionId,
-      question: currentQ.question,
-      score: user.score,
-      result: -1,
-    };
+    const resQuestion = makeResponse(
+      currentQ.questionId,
+      currentQ.question,
+      user.score,
+      -1
+    );
 
     return res.status(200).json(resQuestion);
   });
@@ -103,15 +100,18 @@ router.put('/', jsonParser, (req, res) => {
     let result = false;
 
     let currentQ = userQuest[0];
+    const currentA = req.body.answer.toLowerCase().trim();
 
-    if (currentQ.answer === req.body.answer) {
+    if (currentQ.answer === currentA) {
       currentQ.mValue *= 2;
       userScore += 10;
       result = true;
+    } else {
+      currentQ.mValue = 1;
     }
 
     userQuest.shift();
-    userQuest.push(currentQ);
+    userQuest.splice(currentQ.mValue, 0, currentQ);
     currentQ = userQuest[0];
 
     User.findByIdAndUpdate(userId, {
@@ -122,26 +122,15 @@ router.put('/', jsonParser, (req, res) => {
         return res.status(400).json(err);
       }
 
-      const resQuestion = {
-        result,
-        _id: currentQ._id,
-        question: currentQ.question,
-        score: newUser.score,
-      };
+      const resQuestion = makeResponse(
+        currentQ.questionId,
+        currentQ.question,
+        newUser.score,
+        result
+      );
 
       return res.status(200).json(resQuestion);
     });
-  });
-});
-
-// TEST endpoint to see the questions array
-router.get('/list', loggedIn, (req, res) => {
-  User.findById(req.user._id, (err, user) => {
-    if (err) {
-      return res.status(400).json(err);
-    }
-
-    return res.status(200).json(user.questions);
   });
 });
 
