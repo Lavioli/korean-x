@@ -11,8 +11,6 @@ function reducer (state, action) {
             userAnswer: null,
             questions: action.questions
         });
-    } else if (action.type === actions.FETCH_QUESTIONS_ERROR) {
-        return state;
     } else if (action.type === actions.SUBMIT_ANSWER_SUCCESS) {
         return Object.assign({}, state, {
             questions: action.answer

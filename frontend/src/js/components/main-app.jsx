@@ -22,21 +22,32 @@ class MainApp extends React.Component {
     }
 
     render() {
-        console.log(this.props.questions, '<---- QUESTIONS');
+        if (!this.props.questions.question) {
+            var spans = <span></span>
+        } else {
+            var letters = this.props.questions.question.split('');
+            var spans = letters.map((letter) =>
+                <span className="letter" data-letter={letter}>{letter}</span>
+            );
+        }
+
         return (
             <div>
-                <section>
-                    <h1>Korean X</h1>
-                    <a href="/logout">Log Out</a>
+                <section className="button">
+                    <p>Korean X</p>
+                    <a className="logout" href="/logout">
+                        <span>Log Out</span>
+                        <span>To Front Page</span>
+                    </a>
                 </section>
                 <section>
-                    <div>{this.props.questions.question}</div>
+                    <div>{spans}</div>
                     <form onSubmit={this.submitAnswer}>
                         <input type="text" ref="userAnswer"/>
                     </form>
                 </section>
                 <section>
-                    <div>Your Score: {this.props.questions.score}</div>
+                    <p>Your Score: {this.props.questions.score}</p>
                 </section>
             </div>
         )
