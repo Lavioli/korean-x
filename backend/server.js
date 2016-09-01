@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const session = require('express-session');
 const config = require('./config');
@@ -34,7 +33,6 @@ if (require.main === module) {
   });
 }
 
-app.use(cookieParser());
 app.use(session({ secret: 'monkeys' }));
 app.use(passport.initialize());
 app.use(passport.session());

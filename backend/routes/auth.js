@@ -22,6 +22,8 @@ passport.use(new GoogleStrategy({
           questions.forEach((question) => {
             questArr.push({
               questionId: question._id,
+              question: question.question,
+              answer: question.answer,
               mValue: 1,
             });
           });
@@ -32,11 +34,12 @@ passport.use(new GoogleStrategy({
             score: 0,
             questions: questArr,
           }, (err, user) => {
+            console.log('cb inside');
             return cb(err, user);
           });
         });
       }
-
+      console.log('cb outside');
       return cb(err, user);
     });
   }
@@ -44,10 +47,18 @@ passport.use(new GoogleStrategy({
 
 // PASSPORT SERIALIZING to authenticate for sessions
 passport.serializeUser((user, done) => {
-  done(null, user[0]._id);
+  console.log('serial');
+  if (!user.length) {
+    console.log('if');
+    done(null);
+  } else {
+    console.log('else');
+    done(null, user[0]._id);
+  }
 });
 
 passport.deserializeUser((id, done) => {
+  console.log('deserial');
   User.findById(id, (err, user) => {
     done(null, user);
   });
