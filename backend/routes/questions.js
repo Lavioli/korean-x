@@ -19,8 +19,8 @@ function makeResponse(_id, question, score, result) {
 // will pull the first question of the question array
 // based on the user that is logged in
 router.get('/', (req, res) => {
-  const userId = '57c880b9e382072d1a2694b2'; // SEAN
-  // const userId = '57c86f3cdfef1aef37258cae'; // ROBBY
+  // const userId = '57c880b9e382072d1a2694b2'; // SEAN
+  const userId = '57c86f3cdfef1aef37258cae'; // ROBBY
 
   User.findById(userId, (err, user) => {
     if (err) {
@@ -114,8 +114,8 @@ router.put('/', jsonParser, (req, res) => {
   }
   // TEMP USER
   // const userId = req.user._id;
-  const userId = '57c880b9e382072d1a2694b2'; // SEAN
-  // const userId = '57c86f3cdfef1aef37258cae'; // ROBBY
+  // const userId = '57c880b9e382072d1a2694b2'; // SEAN
+  const userId = '57c86f3cdfef1aef37258cae'; // ROBBY
 
   User.findById(userId, (err, user) => {
     const userQuest = user.questions.slice();
