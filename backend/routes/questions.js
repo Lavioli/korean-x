@@ -22,25 +22,16 @@ function makeResponse(_id, question, score, result) {
 router.get('/', passport.authenticate('bearer', { session: false }), (req, res) => {
   // const userId = '57c880b9e382072d1a2694b2'; // SEAN
   // const userId = '57c86f3cdfef1aef37258cae'; // ROBBY
-  console.log('hello');
-  console.log(req.user);
-
-  User.findById(userId, (err, user) => {
-    if (err) {
-      return res.status(400).json(err);
-    }
-
-    const currentQ = user.questions[0];
+    const currentQ = req.user.questions[0];
 
     const resQuestion = makeResponse(
       currentQ.questionId,
       currentQ.question,
-      user.score,
+      req.user.score,
       -1
     );
 
     return res.status(200).json(resQuestion);
-  });
 });
 
 router.post('/', jsonParser, (req, res) => {

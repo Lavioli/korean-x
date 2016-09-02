@@ -21,7 +21,7 @@ function fetchQuestionsError(error) {
 function fetchQuestion() {
   return (dispatch) => {
     const headers = new Headers();
-    headers.append('Authorization', `Bearer ${window.AUTH_TOKEN}`);
+    headers.append('Authorization', `Bearer ${AUTH_TOKEN}`);
     let url = 'http://localhost:8080/questions';
     return fetch(url, {
       headers,

@@ -60,7 +60,7 @@ passport.use(new BearerStrategy(
         return done(null, false);
       }
 
-      return done(null, user[0].accessToken);
+      return done(null, user[0]);
     });
   }
 ));
@@ -78,7 +78,7 @@ router.get('/google/callback',
       html = html.toString();
       html = html.replace('<!--script-->',
         `<script>const AUTH_TOKEN="${req.user[0].accessToken}";
-        history.replaceState(null, null, "/index.html");</script>`);
+        history.replaceState(null, null, "/#/main");</script>`);
       res.send(html);
     });
   }
