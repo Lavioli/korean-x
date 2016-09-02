@@ -28661,7 +28661,7 @@
 	            { className: 'button' },
 	            _react2.default.createElement(
 	                'a',
-	                { href: '/auth/google' },
+	                { href: '/korean-x/auth/google' },
 	                _react2.default.createElement(
 	                    'span',
 	                    null,
@@ -28779,7 +28779,7 @@
 	                    ),
 	                    _react2.default.createElement(
 	                        'a',
-	                        { className: 'logout', href: '/logout' },
+	                        { className: 'logout', href: '/korean-x/logout' },
 	                        _react2.default.createElement(
 	                            'span',
 	                            null,
