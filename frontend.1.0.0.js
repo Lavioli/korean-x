@@ -28869,7 +28869,8 @@
 	  return function (dispatch) {
 	    var headers = new Headers();
 	    headers.append('Authorization', 'Bearer ' + AUTH_TOKEN);
-	    var url = 'http://localhost:8080/questions';
+	    // let url = 'http://localhost:8080/questions';
+	    var url = 'https://young-anchorage-88242.herokuapp.com/questions';
 	    return (0, _isomorphicFetch2.default)(url, {
 	      headers: headers
 	    }).then(function (response) {
@@ -28917,7 +28918,8 @@
 	      },
 	      body: JSON.stringify(answer)
 	    };
-	    var url = 'http://localhost:8080/questions';
+	    // let url = 'http://localhost:8080/questions';
+	    var url = 'https://young-anchorage-88242.herokuapp.com/questions';
 	    return (0, _isomorphicFetch2.default)(url, init).then(function (response) {
 	      if (response.status < 200 || response.status >= 300) {
 	        var error = new Error(response.statusText);
