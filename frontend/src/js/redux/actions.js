@@ -31,8 +31,7 @@ function fetchQuestion() {
         error.response = response;
         throw error;
       }
-      // console.log(response, '<---just response');
-      // console.log(response.json(), '<----with json');
+
       return response.json();
     }).then((questions) => {
       return dispatch(fetchQuestionsSuccess(questions));
@@ -65,8 +64,9 @@ function submitAnswer(answer) {
     let init = {
       method: 'PUT',
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${AUTH_TOKEN}`,
       },
       body: JSON.stringify(answer)
     };

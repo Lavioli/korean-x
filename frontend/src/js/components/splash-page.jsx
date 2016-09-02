@@ -12,6 +12,7 @@ function SplashPage() {
                     <span className="letter" data-letter="E">E</span>
                     <span className="letter" data-letter="A">A</span>
                     <span className="letter" data-letter="N">N</span>
+                    <span className="letter" data-letter=" "> </span>
                     <span className="letter" data-letter="X">X</span>
                 </div>
                 <p>Learn 한글[Hangul] through spaced repetition</p>
