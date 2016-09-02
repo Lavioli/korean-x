@@ -35,7 +35,7 @@ if (require.main === module) {
 }
 
 app.use(passport.initialize());
-app.use(express.static('../frontend/build'));
+app.use(express.static('./frontend/build'));
 app.use(jsonParser);
 
 app.use('/auth', auth);

@@ -73,7 +73,7 @@ router.get('/google/callback',
   passport.authenticate('google', { failureRedirect: '/login', session: false }),
   (req, res) => {
     // Successful authentication, redirect home.
-    fs.readFile('../frontend/build/index.html', (err, html) => {
+    fs.readFile('./frontend/build/index.html', (err, html) => {
       html = html.toString();
       html = html.replace('<!--script-->',
         `<script>const AUTH_TOKEN="${req.user.accessToken}";
