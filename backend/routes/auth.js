@@ -43,7 +43,7 @@ passport.use(new GoogleStrategy({
         });
       }
 
-      return cb(err, user);
+      return cb(err, user[0]);
     });
   }
 ));
@@ -76,7 +76,7 @@ router.get('/google/callback',
     fs.readFile('../frontend/build/index.html', (err, html) => {
       html = html.toString();
       html = html.replace('<!--script-->',
-        `<script>const AUTH_TOKEN="${req.user[0].accessToken}";
+        `<script>const AUTH_TOKEN="${req.user.accessToken}";
         history.replaceState(null, null, "/#/main");</script>`);
       res.send(html);
     });
