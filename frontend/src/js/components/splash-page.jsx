@@ -18,7 +18,7 @@ function SplashPage() {
                 <p>Learn 한글[Hangul] through spaced repetition</p>
             </section>
             <section className="button">
-                <a href="/auth/google">
+                <a href="/korean-x/auth/google">
                     <span>Log In</span>
                     <span>Register</span>
                 </a>

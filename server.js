@@ -38,13 +38,13 @@ app.use(passport.initialize());
 app.use(express.static('./frontend/build'));
 app.use(jsonParser);
 
-app.use('/korean-x/auth', auth);
-app.use('/korean-x/questions', questions);
-app.use('/korean-x/users', users);
+app.use('/auth', auth);
+app.use('/questions', questions);
+app.use('/users', users);
 
-app.get('/korean-x/logout', (req, res) => {
+app.get('/logout', (req, res) => {
   req.logout();
-  res.redirect('/korean-x');
+  res.redirect('/');
 });
 
 exports.app = app;
