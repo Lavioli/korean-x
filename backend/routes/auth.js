@@ -38,12 +38,11 @@ passport.use(new GoogleStrategy({
             score: 0,
             questions: questArr,
           }, (err, user) => {
-            console.log('cb inside');
             return cb(err, user);
           });
         });
       }
-      console.log('cb outside');
+
       return cb(err, user);
     });
   }

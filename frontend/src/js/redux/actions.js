@@ -65,8 +65,9 @@ function submitAnswer(answer) {
     let init = {
       method: 'PUT',
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${AUTH_TOKEN}`,
       },
       body: JSON.stringify(answer)
     };

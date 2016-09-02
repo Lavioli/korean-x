@@ -20,18 +20,16 @@ function makeResponse(_id, question, score, result) {
 // will pull the first question of the question array
 // based on the user that is logged in
 router.get('/', passport.authenticate('bearer', { session: false }), (req, res) => {
-  // const userId = '57c880b9e382072d1a2694b2'; // SEAN
-  // const userId = '57c86f3cdfef1aef37258cae'; // ROBBY
-    const currentQ = req.user.questions[0];
+  const currentQ = req.user.questions[0];
 
-    const resQuestion = makeResponse(
-      currentQ.questionId,
-      currentQ.question,
-      req.user.score,
-      -1
-    );
+  const resQuestion = makeResponse(
+    currentQ.questionId,
+    currentQ.question,
+    req.user.score,
+    -1
+  );
 
-    return res.status(200).json(resQuestion);
+  return res.status(200).json(resQuestion);
 });
 
 router.post('/', jsonParser, (req, res) => {
@@ -94,7 +92,7 @@ next question. Takes object in the following format:
   answer: 'rice' // whatever the user input is
 }
 */
-router.put('/', jsonParser, (req, res) => {
+router.put('/', passport.authenticate('bearer', { session: false }), (req, res) => {
   if (!req.body._id) {
     return res.status(422).json({
       message: 'Missing field: _id',
@@ -106,53 +104,51 @@ router.put('/', jsonParser, (req, res) => {
       message: 'Missing field: answer',
     });
   }
-  // TEMP USER
-  // const userId = req.user._id;
-  // const userId = '57c880b9e382072d1a2694b2'; // SEAN
-  const userId = '57c86f3cdfef1aef37258cae'; // ROBBY
 
-  User.findById(userId, (err, user) => {
-    const userQuest = user.questions.slice();
-    let userScore = user.score;
-    let result = false;
+  const user = req.user;
 
-    let currentQ = userQuest[0];
-    const currentA = req.body.answer.toLowerCase().trim();
+  // const userQuest = user.questions.slice();
+  // let userScore = user.score;
+  let result = false;
 
-    if (currentQ.answer === currentA) {
-      currentQ.mValue *= 2;
-      userScore += 10;
-      result = true;
+  // let currentQ = userQuest[0];
+  let currentQ = user.questions[0];
+  const currentA = req.body.answer.toLowerCase().trim();
+
+  if (currentQ.answer === currentA) {
+    currentQ.mValue *= 2;
+    // userScore += 10;
+    user.score += 10;
+    result = true;
+  } else {
+    currentQ.mValue = 1;
+    if (user.score >= 15) {
+      user.score -= 15;
     } else {
-      currentQ.mValue = 1;
-      if (userScore >= 15) {
-        userScore -= 15;
-      } else {
-        userScore = 0;
-      }
+      user.score = 0;
+    }
+  }
+
+  user.questions.shift();
+  user.questions.splice(currentQ.mValue, 0, currentQ);
+  currentQ = user.questions[0];
+
+  User.findByIdAndUpdate(user._id, {
+    score: user.score,
+    questions: user.questions,
+  }, { new: true }, (err, newUser) => {
+    if (err) {
+      return res.status(400).json(err);
     }
 
-    userQuest.shift();
-    userQuest.splice(currentQ.mValue, 0, currentQ);
-    currentQ = userQuest[0];
+    const resQuestion = makeResponse(
+      currentQ.questionId,
+      currentQ.question,
+      newUser.score,
+      result
+    );
 
-    User.findByIdAndUpdate(userId, {
-      score: userScore,
-      questions: userQuest,
-    }, { new: true }, (err, newUser) => {
-      if (err) {
-        return res.status(400).json(err);
-      }
-
-      const resQuestion = makeResponse(
-        currentQ.questionId,
-        currentQ.question,
-        newUser.score,
-        result
-      );
-
-      return res.status(200).json(resQuestion);
-    });
+    return res.status(200).json(resQuestion);
   });
 });
 
