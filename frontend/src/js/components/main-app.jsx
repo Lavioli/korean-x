@@ -44,7 +44,7 @@ class MainApp extends React.Component {
             <div>
                 <section className="button">
                     <p>Korean X</p>
-                    <a className="logout" href="/korean-x/logout">
+                    <a className="logout" href="/logout">
                         <span>Log Out</span>
                         <span>To Front</span>
                     </a>
