@@ -22,7 +22,8 @@ function fetchQuestion() {
   return (dispatch) => {
     const headers = new Headers();
     headers.append('Authorization', `Bearer ${AUTH_TOKEN}`);
-    let url = 'http://localhost:8080/questions';
+    // let url = 'http://localhost:8080/questions';
+    let url = 'https://young-anchorage-88242.herokuapp.com/questions';
     return fetch(url, {
       headers,
     }).then((response) => {
@@ -70,7 +71,8 @@ function submitAnswer(answer) {
       },
       body: JSON.stringify(answer)
     };
-    let url = 'http://localhost:8080/questions';
+    // let url = 'http://localhost:8080/questions';
+    let url = 'https://young-anchorage-88242.herokuapp.com/questions';
     return fetch(url, init).then((response) => {
       if (response.status < 200 || response.status >= 300) {
         let error = new Error(response.statusText);
