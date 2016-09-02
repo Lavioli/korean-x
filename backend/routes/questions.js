@@ -2,49 +2,36 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const Question = require('../models/question');
 const User = require('../models/user');
+const passport = require('passport');
 
 const router = express.Router();
 const jsonParser = bodyParser.json();
 
-function loggedIn(req, res, next) {
-  if (req.user) {
-    next();
-  } else {
-    console.log('ELSE');
-    res.redirect('/');
-  }
+function makeResponse(_id, question, score, result) {
+  return {
+    _id,
+    question,
+    score,
+    result,
+  };
 }
 
 // QUESTIONS endpoint
 // will pull the first question of the question array
 // based on the user that is logged in
-router.get('/', /*loggedIn,*/ (req, res) => {
-  // TEMP USER
-  // const userId = req.user._id;
-  // console.log(userId);
-  const userId = '57c70400ed63bc78ed60634a'; // SEAN
-  // const userId = '57c7365779e5566c21c3176a'; // ROBBY
+router.get('/', passport.authenticate('bearer', { session: false }), (req, res) => {
+  // const userId = '57c880b9e382072d1a2694b2'; // SEAN
+  // const userId = '57c86f3cdfef1aef37258cae'; // ROBBY
+    const currentQ = req.user.questions[0];
 
-  User.findById(userId, (err, user) => {
-    if (err) {
-      return res.status(400).json(err);
-    }
+    const resQuestion = makeResponse(
+      currentQ.questionId,
+      currentQ.question,
+      req.user.score,
+      -1
+    );
 
-    Question.findById(user.questions[0].questionId, (err, question) => {
-      if (err) {
-        return res.status(400).json(err);
-      }
-
-      const resQuestion = {
-        _id: question._id,
-        question: question.question,
-        mValue: user.questions[0].mValue,
-        score: user.score,
-      };
-
-      return res.status(200).json(resQuestion);
-    });
-  });
+    return res.status(200).json(resQuestion);
 });
 
 router.post('/', jsonParser, (req, res) => {
@@ -67,6 +54,29 @@ router.post('/', jsonParser, (req, res) => {
     if (err) {
       return res.status(400).json(err);
     }
+
+    User.find((err, users) => {
+      users.forEach((user) => {
+        const questArr = user.questions.slice();
+        questArr.push({
+          mValue: 1,
+          questionId: question._id,
+          question: question.question,
+          answer: question.answer,
+        });
+
+        User.findByIdAndUpdate(
+          user._id,
+          { questions: questArr },
+          { new: true },
+          err => {
+            if (err) {
+              return res.status(400).json(err);
+            }
+          }
+        );
+      });
+    });
 
     return res.header('location', `/questions/${question._id}`)
       .status(201)
@@ -98,59 +108,51 @@ router.put('/', jsonParser, (req, res) => {
   }
   // TEMP USER
   // const userId = req.user._id;
-  const userId = '57c70400ed63bc78ed60634a'; // SEAN
-  // const userId = '57c7365779e5566c21c3176a'; // ROBBY
+  // const userId = '57c880b9e382072d1a2694b2'; // SEAN
+  const userId = '57c86f3cdfef1aef37258cae'; // ROBBY
 
   User.findById(userId, (err, user) => {
     const userQuest = user.questions.slice();
     let userScore = user.score;
     let result = false;
 
-    Question.findById(req.body._id, (err, question) => {
+    let currentQ = userQuest[0];
+    const currentA = req.body.answer.toLowerCase().trim();
+
+    if (currentQ.answer === currentA) {
+      currentQ.mValue *= 2;
+      userScore += 10;
+      result = true;
+    } else {
+      currentQ.mValue = 1;
+      if (userScore >= 15) {
+        userScore -= 15;
+      } else {
+        userScore = 0;
+      }
+    }
+
+    userQuest.shift();
+    userQuest.splice(currentQ.mValue, 0, currentQ);
+    currentQ = userQuest[0];
+
+    User.findByIdAndUpdate(userId, {
+      score: userScore,
+      questions: userQuest,
+    }, { new: true }, (err, newUser) => {
       if (err) {
         return res.status(400).json(err);
       }
 
-      if (question.answer === req.body.answer) {
-        userQuest[0].mValue *= 2;
-        userScore += 10;
-        result = true;
-      }
+      const resQuestion = makeResponse(
+        currentQ.questionId,
+        currentQ.question,
+        newUser.score,
+        result
+      );
 
-      const currentQuest = userQuest.shift();
-      userQuest.push(currentQuest);
-
-      User.findByIdAndUpdate(userId, {
-        score: userScore,
-        questions: userQuest,
-      }, { new: true }, (err, newUser) => {
-        if (err) {
-          return res.status(400).json(err);
-        }
-
-        Question.findById(newUser.questions[0].questionId, (err, newQuestion) => {
-          const resQuestion = {
-            result,
-            _id: newQuestion._id,
-            question: newQuestion.question,
-            score: newUser.score,
-          };
-
-          return res.status(200).json(resQuestion);
-        });
-      });
+      return res.status(200).json(resQuestion);
     });
-  });
-});
-
-// TEST endpoint to see the questions array
-router.get('/list', loggedIn, (req, res) => {
-  User.findById(req.user._id, (err, user) => {
-    if (err) {
-      return res.status(400).json(err);
-    }
-
-    return res.status(200).json(user.questions);
   });
 });
 

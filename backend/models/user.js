@@ -11,8 +11,12 @@ const UserSchema = new mongoose.Schema({
     required: true,
   },
 
-  score: Number,
+  accessToken: {
+    type: String,
+    require: true,
+  },
 
+  score: Number,
   questions: Array,
 });
 

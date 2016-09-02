@@ -1,7 +1,10 @@
+const fs = require('fs');
+
 const express = require('express');
 const passport = require('passport');
-const mongoose = require('mongoose');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const BearerStrategy = require('passport-http-bearer').Strategy;
+
 const secret = require('../google-secret');
 const Question = require('../models/question');
 const User = require('../models/user');
@@ -22,36 +25,45 @@ passport.use(new GoogleStrategy({
           questions.forEach((question) => {
             questArr.push({
               questionId: question._id,
+              question: question.question,
+              answer: question.answer,
               mValue: 1,
             });
           });
 
           User.create({
+            accessToken,
             googleId: profile.id,
             name: profile.displayName,
             score: 0,
             questions: questArr,
           }, (err, user) => {
+            console.log('cb inside');
             return cb(err, user);
           });
         });
       }
-
+      console.log('cb outside');
       return cb(err, user);
     });
   }
 ));
 
-// PASSPORT SERIALIZING to authenticate for sessions
-passport.serializeUser((user, done) => {
-  done(null, user[0]._id);
-});
+passport.use(new BearerStrategy(
+  (token, done) => {
+    User.find({ accessToken: token }, (err, user) => {
+      if (err) {
+        return done(null, false);
+      }
 
-passport.deserializeUser((id, done) => {
-  User.findById(id, (err, user) => {
-    done(null, user);
-  });
-});
+      if (!user.length) {
+        return done(null, false);
+      }
+
+      return done(null, user[0]);
+    });
+  }
+));
 
 // Authentication GET requests
 router.get('/google',
@@ -59,10 +71,16 @@ router.get('/google',
 );
 
 router.get('/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login' }),
+  passport.authenticate('google', { failureRedirect: '/login', session: false }),
   (req, res) => {
     // Successful authentication, redirect home.
-    res.redirect('/#/main');
+    fs.readFile('../frontend/build/index.html', (err, html) => {
+      html = html.toString();
+      html = html.replace('<!--script-->',
+        `<script>const AUTH_TOKEN="${req.user[0].accessToken}";
+        history.replaceState(null, null, "/#/main");</script>`);
+      res.send(html);
+    });
   }
 );
 
