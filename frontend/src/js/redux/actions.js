@@ -31,8 +31,7 @@ function fetchQuestion() {
         error.response = response;
         throw error;
       }
-      // console.log(response, '<---just response');
-      // console.log(response.json(), '<----with json');
+
       return response.json();
     }).then((questions) => {
       return dispatch(fetchQuestionsSuccess(questions));

@@ -106,18 +106,13 @@ router.put('/', passport.authenticate('bearer', { session: false }), (req, res) 
   }
 
   const user = req.user;
-
-  // const userQuest = user.questions.slice();
-  // let userScore = user.score;
   let result = false;
 
-  // let currentQ = userQuest[0];
   let currentQ = user.questions[0];
   const currentA = req.body.answer.toLowerCase().trim();
 
   if (currentQ.answer === currentA) {
     currentQ.mValue *= 2;
-    // userScore += 10;
     user.score += 10;
     result = true;
   } else {
