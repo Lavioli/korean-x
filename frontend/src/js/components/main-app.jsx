@@ -19,6 +19,7 @@ class MainApp extends React.Component {
             _id: this.props.questions._id,
             answer: this.refs.userAnswer.value
         }));
+        this.refs.userAnswer.value = '';
     }
 
     render() {
@@ -26,9 +27,17 @@ class MainApp extends React.Component {
             var spans = <span></span>
         } else {
             var letters = this.props.questions.question.split('');
-            var spans = letters.map((letter) =>
-                <span className="letter" data-letter={letter}>{letter}</span>
+            var spans = letters.map((letter, index) =>
+                <span key={index} className="letter" data-letter={letter}>{letter}</span>
             );
+        }
+
+        if (this.props.questions.result === -1) {
+            var ps = <p></p>
+        } else if (this.props.questions.result === true) {
+            var ps = <p className="correct">Correct!</p>
+        } else {
+            var ps = <p className="incorrect">Incorrect...</p>
         }
 
         return (
@@ -37,17 +46,18 @@ class MainApp extends React.Component {
                     <p>Korean X</p>
                     <a className="logout" href="/logout">
                         <span>Log Out</span>
-                        <span>To Front Page</span>
+                        <span>To Front</span>
                     </a>
                 </section>
                 <section>
                     <div>{spans}</div>
                     <form onSubmit={this.submitAnswer}>
-                        <input type="text" ref="userAnswer"/>
+                        <input type="text" ref="userAnswer" placeholder="What's it in English?"/>
                     </form>
                 </section>
-                <section>
+                <section className="score">
                     <p>Your Score: {this.props.questions.score}</p>
+                    {ps}
                 </section>
             </div>
         )
