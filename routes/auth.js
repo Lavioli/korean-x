@@ -13,8 +13,8 @@ const router = express.Router();
 
 // GOOGLE AUTHENTICATION STRATEGY
 passport.use(new GoogleStrategy({
-  clientID: secret.GOOGLE_CLIENT_ID,
-  clientSecret: secret.GOOGLE_CLIENT_SECRET,
+  clientID: GOOGLE_CLIENT_ID,
+  clientSecret: GOOGLE_CLIENT_SECRET,
   callbackURL: 'https://young-anchorage-88242.herokuapp.com/auth/google/callback',
 },
   (accessToken, refreshToken, profile, cb) => {
