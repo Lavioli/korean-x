@@ -5,17 +5,21 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const BearerStrategy = require('passport-http-bearer').Strategy;
 
-// const secret = require('../google-secret');
+const secret = require('../google-secret');
 const Question = require('../models/question');
 const User = require('../models/user');
 
 const router = express.Router();
 
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || secret.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || secret.GOOGLE_CLIENT_SECRET;
+
 // GOOGLE AUTHENTICATION STRATEGY
 passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: 'https://young-anchorage-88242.herokuapp.com/auth/google/callback',
+  clientID: GOOGLE_CLIENT_ID,
+  clientSecret: GOOGLE_CLIENT_SECRET,
+  // callbackURL: 'https://young-anchorage-88242.herokuapp.com/auth/google/callback',
+  callbackURL: 'http://localhost:8080/auth/google/callback',
 },
   (accessToken, refreshToken, profile, cb) => {
     User.find({ googleId: profile.id }, (err, user) => {
@@ -31,6 +35,8 @@ passport.use(new GoogleStrategy({
             });
           });
 
+          // FIXME: When you create a new user, it redirects to /login instead
+          // of taking you to the /#/main
           User.create({
             accessToken,
             googleId: profile.id,
@@ -38,6 +44,7 @@ passport.use(new GoogleStrategy({
             score: 0,
             questions: questArr,
           }, (err, user) => {
+            console.log(user);
             return cb(err, user);
           });
         });
