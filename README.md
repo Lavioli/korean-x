@@ -1,4 +1,4 @@
-# Learn from Sean
+# Korean-X
 
 ## Functional Specification
 
