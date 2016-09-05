@@ -18,8 +18,8 @@ const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || secret.GOOGLE_C
 passport.use(new GoogleStrategy({
   clientID: GOOGLE_CLIENT_ID,
   clientSecret: GOOGLE_CLIENT_SECRET,
-  // callbackURL: 'https://young-anchorage-88242.herokuapp.com/auth/google/callback',
-  callbackURL: 'http://localhost:8080/auth/google/callback',
+  callbackURL: 'https://young-anchorage-88242.herokuapp.com/auth/google/callback',
+  // callbackURL: 'http://localhost:8080/auth/google/callback',
 },
   (accessToken, refreshToken, profile, cb) => {
     User.find({ googleId: profile.id }, (err, user) => {
@@ -77,7 +77,7 @@ router.get('/google',
 );
 
 router.get('/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login', session: false }),
+  passport.authenticate('google', { failureRedirect: '/', session: false }),
   (req, res) => {
     // Successful authentication, redirect home.
     fs.readFile('./frontend/build/index.html', (err, html) => {
