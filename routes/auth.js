@@ -49,8 +49,9 @@ passport.use(new GoogleStrategy({
           });
         });
       }
-
-      return cb(err, user[0]);
+      else {
+        return cb(err, user[0]);
+      }
     });
   }
 ));
